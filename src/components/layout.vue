@@ -2,7 +2,7 @@
   <div class="cols">
     <textarea class="input" v-model="input" placeholder="Paste a CSV into this box." wrap="off" />
     <div>
-      <pre><code>{{output}}</code></pre>
+      <pre><code>{{displayedOutput}}</code></pre>
       <CopyButton v-bind:content="output" />
     </div>
   </div>
@@ -26,8 +26,12 @@ export default {
   data: () => ({ input: placeholder }),
   computed: {
     output () {
-      if (this.input === '') return 'Paste a CSV into the box on the left.'
+      if (!this.input) return ''
       return fromString(this.input)
+    },
+    displayedOutput () {
+      if (!this.input) return 'Paste a CSV into the box on the left.'
+      return this.output
     }
   }
 }
@@ -41,15 +45,24 @@ export default {
   @media(max-width: 800px)
     grid-template-columns: 1fr
 
-.input, code
-  font-family: 'Anonymous Pro', monospace
-  font-size: 14px
+.input
+  min-height: 300px
+  padding: 5px 8px
+  border: 1px solid rgba(0, 0, 0, 0.2)
 
 pre
-  background-color: #ddd
+  background-color: rgba(0, 0, 0, 0.08)
   margin-top: 0
   padding: 10px
   max-width: 600px
   overflow-x: scroll
+
+.input, code
+  font-family: 'Anonymous Pro', monospace
+  font-size: 14px
+
+.input, pre
+  line-height: 1.1
+  border-radius: 4px
 
 </style>
