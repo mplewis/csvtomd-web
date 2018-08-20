@@ -1967,6 +1967,12 @@ cssstyle@^1.0.0:
   dependencies:
     cssom "0.3.x"
 
+csvtomd-lib@^0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/csvtomd-lib/-/csvtomd-lib-0.1.3.tgz#885e9f18c0d0f26adf205fd960c389afb90d7d69"
+  dependencies:
+    ramda "^0.25.0"
+
 cuint@^0.2.2:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/cuint/-/cuint-0.2.2.tgz#408086d409550c2631155619e9fa7bcadc3b991b"
@@ -5768,6 +5774,10 @@ querystring@0.2.0:
 querystringify@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/querystringify/-/querystringify-2.0.0.tgz#fa3ed6e68eb15159457c89b37bc6472833195755"
+
+ramda@^0.25.0:
+  version "0.25.0"
+  resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.25.0.tgz#8fdf68231cffa90bc2f9460390a0cb74a29b29a9"
 
 randomatic@^3.0.0:
   version "3.1.0"
