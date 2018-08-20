@@ -14,7 +14,9 @@
   },
   "dependencies": {
     "csvtomd-lib": "^0.1.3",
+    "heredocument": "^2.0.2",
     "vue": "^2.5.2",
+    "vue-clipboard2": "^0.2.1",
     "vue-router": "^3.0.1"
   },
   "devDependencies": {
