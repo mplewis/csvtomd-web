@@ -1,0 +1,85 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/csvtomd-web
+    docker:
+      - image: mhart/alpine-node@sha256:74ccf977e92c92a17392d0615409f83ef035855805b9d3b63978d3fef4ff5696
+    steps:
+      - checkout
+      - run:
+          # https://circleci.com/docs/2.0/custom-images/#adding-required-and-custom-tools-or-files
+          name: Install CircleCI dependencies
+          command: apk add --no-cache ca-certificates
+      - run:
+          name: Install Yarn
+          command: npm install -g yarn
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: Install project dependencies
+          command: yarn install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          name: Run unit tests
+          command: yarn unit
+      - store_artifacts:
+          path: test/unit/results
+          prefix: results
+      - store_artifacts:
+          path: test/unit/coverage
+          destination: coverage
+      - store_test_results:
+          path: test/unit/results
+
+  deploy:
+    working_directory: ~/csvtomd-web
+    docker:
+      - image: mhart/alpine-node@sha256:74ccf977e92c92a17392d0615409f83ef035855805b9d3b63978d3fef4ff5696
+    steps:
+      - checkout
+      - run:
+          name: Install CircleCI and deploy dependencies
+          command: apk add --no-cache ca-certificates git openssh
+      - run:
+          name: Install Yarn
+          command: npm install -g yarn
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: Install project dependencies
+          command: yarn install
+      - run:
+          name: Production build
+          command: yarn build
+      - run:
+          name: Set CNAME for GitHub Pages
+          command: cp CNAME dist
+      - run:
+          name: Add GitHub public key to SSH
+          command: mkdir -p ~/.ssh; echo 'github.com,192.30.253.112 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
+      - run:
+          name: Set up Git user
+          command: git config --global user.email "deploy@mplewis.com"; git config --global user.name "Deploy Worker"
+      - run:
+          name: Deploy
+          command: yarn deploy
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore:
+                - gh-pages
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - master
